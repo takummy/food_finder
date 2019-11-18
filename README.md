@@ -6,7 +6,7 @@ sinatraでFacebook Botを作成してみる。
 2. JASONの扱い
 
 # タスク一覧
-- [ ] sinatraのインストール
+- [x] sinatraのインストール
 - [ ] sinatra/reloaderの導入
 - [ ] コールバックURLの作成
 - [ ] Webhooksの設定
