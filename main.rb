@@ -1,6 +1,9 @@
+require 'dotenv'
 require 'jason'
+require 'rest_client'
 require 'sinatra'
 require 'sinatra/reloader'
+Dotenv.load
 
 get '/' do
   "Hello, world!"
@@ -15,8 +18,18 @@ get '/callback' do
 end
 
 post '/callback' do
-  request_body = JASON.parse(request.body.read)
-  puts request_body
-  status 201
+  hash = JASON.parse(request.body.read)
+  messaging = hash["entry"][0]["messaging"][0]
+  snder = messaging["sender"]["id"]
+  text = messaging["message"]["text"]
+  endpoint = ENV["TOKEN_URL"]
+  content = {
+    recipient: { id: sender },
+    message: { text: text }
+  }
+  request_body = content.to_jason
+
+  RestClient.post entrypoint, request_body, content_type: :jason, accept: :jason
+  status 202
   body ''
 end
