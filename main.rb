@@ -1,6 +1,9 @@
+require 'dotenv'
 require 'json'
+require 'rest_client'
 require 'sinatra'
 require 'sinatra/reloader'
+Dotenv.load
 
 get '/' do
   "Hello, world!"
