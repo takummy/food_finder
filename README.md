@@ -8,7 +8,7 @@ sinatraでFacebook Botを作成してみる。
 # タスク一覧
 - [x] sinatraのインストール
 - [x] sinatra/reloaderの導入
-- [ ] コールバックURLの作成
+- [x] コールバックURLの作成
 - [ ] Webhooksの設定
 - [ ] 簡単なオウム返しの実装
 - [ ] FacebookMessengerのエンドポイントを定数として定義
