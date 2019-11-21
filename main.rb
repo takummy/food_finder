@@ -5,6 +5,8 @@ require 'sinatra'
 require 'sinatra/reloader'
 Dotenv.load
 
+FB_ENDPOINT = ENV["TOKEN_URL"]
+
 get '/' do
   "Hello, world!"
 end
@@ -22,7 +24,7 @@ post '/callback' do
   message = hash["entry"][0]["messaging"][0]
   sender = message["sender"]["id"]
   text = message["message"]["text"]
-  endpoint = ENV["TOKEN_URL"]
+  endpoint = FB_ENDPOINT
   content = {
     recipient: { id: sender },
     message: { text: text }
