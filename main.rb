@@ -9,6 +9,13 @@ FB_ENDPOINT = ENV["TOKEN_URL"]
 GNAVI_KEYID = ENV["GNAVI_KEYID"]
 GNAVI_CATEGORY_LARGE_SEARCH_API = "https://api.gnavi.co.jp/master/CategoryLargeSearchAPI/v3/"
 
+helpers do
+  def get_categories
+    response = JSON.parse(RestClient.get GNAVI_CATEGORY_LARGE_SEARCH_API + "?keyid=" + GNAVI_KEYID)
+    categories = response["category_l"]
+    categories
+  end
+end
 get '/' do
   "Hello, world!"
 end
