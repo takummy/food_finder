@@ -5,6 +5,8 @@ require 'sinatra'
 require 'sinatra/reloader'
 Dotenv.load
 
+FB_ENDPOINT = ENV["TOKEN_URL"]
+
 get '/' do
   "Hello, world!"
 end
@@ -21,15 +23,14 @@ post '/callback' do
   hash = JSON.parse(request.body.read)
   message = hash["entry"][0]["messaging"][0]
   sender = message["sender"]["id"]
-  text = message["message"]["text"]
-  endpoint = ENV["TOKEN_URL"]
+  text = "カテゴリーと位置情報からレストランを検索します。レストランを検索したい場合は、「レストラン検索」と話しかけてね！"
   content = {
     recipient: { id: sender },
     message: { text: text }
   }
   request_body = content.to_json
 
-  RestClient.post endpoint, request_body, content_type: :json, accept: :json
+  RestClient.post FB_ENDPOINT, request_body, content_type: :json, accept: :json
   status 201
   body ''
 end
