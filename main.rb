@@ -95,6 +95,23 @@ helpers do
     end
     elements
   end
+
+  def set_reply_of_restaurant(sender, elements)
+    {
+      recipient: {
+        id: sender
+      },
+      message: {
+        attachment: {
+          type: 'template',
+          payload: {
+            template_type: "generic",
+            elements: elements
+          }
+        }
+      }
+    }.to_json
+  end
 end
 
 get '/' do
