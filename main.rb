@@ -65,14 +65,21 @@ post '/callback' do
   sender = message["sender"]["id"]
 
   if message["message"]["text"] == "レストラン検索"
-  text = "カテゴリーと位置情報からレストランを検索します。レストランを検索したい場合は、「レストラン検索」と話しかけてね！"
-  content = {
-    recipient: { id: sender },
-    message: { text: text }
-  }
-  request_body = content.to_json
 
-  RestClient.post FB_ENDPOINT, request_body, content_type: :json, accept: :json
+    categories = filter_categories
+    request_body = set_quick_reply_of_categories(sender, categories)
+    RestClient.post FB_ENDPOINT, request_body, content_type: :json, accept: :json
+
+  else
+    text = "カテゴリーと位置情報からレストランを検索します。レストランを検索したい場合は、「レストラン検索」と話しかけてね！"
+    content = {
+      recipient: { id: sender },
+      message: { text: text }
+    }
+    request_body = content.to_json
+
+    RestClient.post FB_ENDPOINT, request_body, content_type: :json, accept: :json
+  end
   status 201
   body ''
 end
