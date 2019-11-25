@@ -66,6 +66,12 @@ helpers do
     long = message["message"]["attachments"][0]["payload"]["coordinates"]["long"]
     [lat, long]
   end
+
+  def get_restaurants(lat, long, requested_category_code)
+    params = "?keyid=#{GNAVI_KEYID}&latitude=#{lat}&longitude=#{long}&category_l=#{requested_category_code}&range=3"
+    restaurants = JSON.parse(RestClient.get GNAVI_SEARCHAPI + params)
+    restaurants
+  end
 end
 
 get '/' do
