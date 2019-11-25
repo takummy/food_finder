@@ -8,6 +8,7 @@ Dotenv.load
 FB_ENDPOINT = ENV["TOKEN_URL"]
 GNAVI_KEYID = ENV["GNAVI_KEYID"]
 GNAVI_CATEGORY_LARGE_SEARCH_API = "https://api.gnavi.co.jp/master/CategoryLargeSearchAPI/v3/"
+GNAVI_SEARCHAPI = "https://api.gnavi.co.jp/RestSearchAPI/v3/"
 
 helpers do
   def get_categories
@@ -45,6 +46,72 @@ helpers do
       }
     }.to_json
   end
+
+  def set_quick_reply_of_location(sender)
+    {
+      recipient: {
+        id: sender
+      },
+      message: {
+        text: "位置情報を送信してね！",
+        quick_replies: [
+          { content_type: "location" }
+        ]
+      }
+    }.to_json
+  end
+
+  def get_location(message)
+    lat = message["message"]["attachments"][0]["payload"]["coordinates"]["lat"]
+    long = message["message"]["attachments"][0]["payload"]["coordinates"]["long"]
+    [lat, long]
+  end
+
+  def get_restaurants(lat, long, requested_category_code)
+    params = "?keyid=#{GNAVI_KEYID}&latitude=#{lat}&longitude=#{long}&category_l=#{requested_category_code}&range=3"
+    restaurants = JSON.parse(RestClient.get GNAVI_SEARCHAPI + params)
+    restaurants
+  end
+
+  def set_restaurants_info(restaurants)
+    elements = []
+    restaurants["rest"].each do |rest|
+      image = rest["image_url"]["shop_image1"].empty? ? "http://awesome-food-finder.herokuapp.com/images/no-image.png" : rest["image_url"]["shop_image1"]
+      elements.push(
+        {
+          title: rest["name"],
+          item_url: rest["url_mobile"],
+          image_url: image,
+          subtitle: "[カテゴリー: #{rest["code"]["category_name_l"][0]}] #{rest["pr"]["pr_short"]}",
+          buttons: [
+            {
+              type: "web_url",
+              url: rest["url_mobile"],
+              title: "詳細を見る"
+            }
+          ]
+        }
+      )
+    end
+    elements
+  end
+
+  def set_reply_of_restaurant(sender, elements)
+    {
+      recipient: {
+        id: sender
+      },
+      message: {
+        attachments: {
+          type: 'template',
+          payload: {
+            template_type: "generic",
+            elements: elements
+          }
+        }
+      }
+    }.to_json
+  end
 end
 
 get '/' do
@@ -65,11 +132,19 @@ post '/callback' do
   sender = message["sender"]["id"]
 
   if message["message"]["text"] == "レストラン検索"
-
     categories = filter_categories
     request_body = set_quick_reply_of_categories(sender, categories)
     RestClient.post FB_ENDPOINT, request_body, content_type: :json, accept: :json
-
+  elsif !message["message"]["quick_reply"]["payload"].nil?
+    $requested_category_code = message["message"]["quick_reply"]["payload"]
+    request_body = set_quick_reply_of_location(sender)
+    RestClient.post FB_ENDPOINT, request_body, content_type: :json, accept: :json
+  elsif !message["message"]["attachments"].nil? && message["message"]["attachments"]["type"] == 'location' && !$requested_category_code.nil?
+    lat, long = get_location(message)
+    restaurants = get_restaurants(lat, long, $requested_category_code)
+    elements = set_restaurants_info(restaurants)
+    request_body = set_reply_of_restaurant(sender, elements)
+    RestClient.post FB_ENDPOINT, request_body, content_type: :json, accept: :json
   else
     text = "カテゴリーと位置情報からレストランを検索します。レストランを検索したい場合は、「レストラン検索」と話しかけてね！"
     content = {
