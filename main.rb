@@ -15,7 +15,26 @@ helpers do
     categories = response["category_l"]
     categories
   end
+
+  def filter_categories
+    categories = []
+    get_categories.each_with_index do |category, i|
+      if i < 11
+        hash = {
+          content_type: 'text',
+          title: category["category_l_name"],
+          payload: category["category_l_code"],
+        }
+        p hash
+        categories.push(hash)
+      else
+        p "11回目は配列に入れない"
+      end
+    end
+    categories
+  end
 end
+
 get '/' do
   "Hello, world!"
 end
