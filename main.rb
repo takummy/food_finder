@@ -8,6 +8,7 @@ Dotenv.load
 FB_ENDPOINT = ENV["TOKEN_URL"]
 GNAVI_KEYID = ENV["GNAVI_KEYID"]
 GNAVI_CATEGORY_LARGE_SEARCH_API = "https://api.gnavi.co.jp/master/CategoryLargeSearchAPI/v3/"
+GNAVI_SEARCHAPI = "https://api.gnavi.co.jp/RestSearchAPI/v3/"
 
 helpers do
   def get_categories
