@@ -59,6 +59,12 @@ helpers do
       }
     }.to_json
   end
+
+  def get_location(message)
+    lat = message["message"]["attachments"][0]["payload"]["coordinates"]["lat"]
+    long = message["message"]["attachments"][0]["payload"]["coordinates"]["long"]
+    [lat, long]
+  end
 end
 
 get '/' do
