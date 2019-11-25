@@ -72,6 +72,29 @@ helpers do
     restaurants = JSON.parse(RestClient.get GNAVI_SEARCHAPI + params)
     restaurants
   end
+
+  def set_restaurants_info(restaurants)
+    elements = []
+    restaurants["rest"].each do |rest|
+      image = rest["image_url"]["shop_image1"].empty? ? "http://awesome-food-finder.herokuapp.com/images/no-image.png" : rest["image_url"]["shop_image1"]
+      elements.push(
+        {
+          title: rest["name"],
+          item_url: rest["url_mobile"],
+          image_url: image,
+          subtitle: "[カテゴリー: #{rest["code"]["category_name_l"][0]}] #{rest["pr"]["pr_short"]}",
+          buttons: [
+            {
+              type: "web_url",
+              url: rest["url_mobile"],
+              title: "詳細を見る"
+            }
+          ]
+        }
+      )
+    end
+    elements
+  end
 end
 
 get '/' do
