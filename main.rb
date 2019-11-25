@@ -45,6 +45,20 @@ helpers do
       }
     }.to_json
   end
+
+  def set_quick_reply_of_location(sender)
+    {
+      recipient: {
+        id: sender
+      },
+      message: {
+        text: "位置情報を送信してね！",
+        quick_replies: [
+          { content_type: "location" }
+        ]
+      }
+    }.to_json
+  end
 end
 
 get '/' do
@@ -69,7 +83,10 @@ post '/callback' do
     categories = filter_categories
     request_body = set_quick_reply_of_categories(sender, categories)
     RestClient.post FB_ENDPOINT, request_body, content_type: :json, accept: :json
-
+  elsif !message["message"]["quick_reply"]["payload"].nil?
+    $requested_category_code = message["message"]["quick_reply"]["payload"]
+    request_body = set_quick_reply_of_location(sender)
+    RestClient.post FB_ENDPOINT, request_body, content_type: :json, accept: :json
   else
     text = "カテゴリーと位置情報からレストランを検索します。レストランを検索したい場合は、「レストラン検索」と話しかけてね！"
     content = {
