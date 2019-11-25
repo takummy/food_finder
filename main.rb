@@ -33,6 +33,18 @@ helpers do
     end
     categories
   end
+
+  def set_quick_reply_of_categories(sender, categories)
+    {
+      recipient: {
+        id: sender
+      },
+      message: {
+        text: "何が食べたいですか？",
+        quick_replies: categories
+      }
+    }.to_json
+  end
 end
 
 get '/' do
