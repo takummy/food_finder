@@ -1,4 +1,5 @@
 # 概要
+****※Messengerのquick replyで位置情報の利用が廃止された為、一旦中止。***
 sinatraでFacebook Botを作成してみる。
 
 # 開発を通して身につけること
