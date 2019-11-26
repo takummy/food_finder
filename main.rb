@@ -135,7 +135,7 @@ post '/callback' do
     categories = filter_categories
     request_body = set_quick_reply_of_categories(sender, categories)
     RestClient.post FB_ENDPOINT, request_body, content_type: :json, accept: :json
-  elsif !message["message"]["quick_reply"]["payload"].nil?
+  elsif !message["message"]["quick_reply"].nil?
     $requested_category_code = message["message"]["quick_reply"]["payload"]
     request_body = set_quick_reply_of_location(sender)
     RestClient.post FB_ENDPOINT, request_body, content_type: :json, accept: :json
